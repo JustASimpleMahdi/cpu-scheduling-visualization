@@ -1,5 +1,5 @@
 export interface DataEntry {
-    id: number
+    id: string
     name: string
     duration: number
     enterTime: number

@@ -4,6 +4,7 @@ import AddDataEntry from './components/AddDataEntry'
 import FCFS from './algorithms/FCFS'
 import type {AlgorithmState} from './types/Base'
 import dataSample from './samples/data'
+import {generateId} from "./utils/Id.ts";
 
 function App() {
     const [data, setData] = useState<null | DataEntry[]>(dataSample())
@@ -24,13 +25,13 @@ function App() {
         setData((currentData) => [
             ...(currentData ?? []),
             {
-                id: Date.now(),
+                id: generateId(),
                 ...entry,
             },
         ])
     }
 
-    function removeDataEntry(entryId: number) {
+    function removeDataEntry(entryId: string) {
         setData((currentData) => currentData?.filter((entry) => entry.id !== entryId) ?? null)
     }
 
@@ -120,6 +121,7 @@ function App() {
                                         elapsedTime += entry.duration
                                         return (
                                             <div
+                                                key={entry.id}
                                                 className="item gap"
                                                 data-end-time={elapsedTime + 's'}
                                                 style={{
@@ -131,6 +133,7 @@ function App() {
                                     elapsedTime += entry.data.duration
                                     return (
                                         <div
+                                            key={entry.id}
                                             className="item process"
                                             data-end-time={elapsedTime + 's'}
                                             style={{
@@ -159,6 +162,7 @@ function App() {
                                     elapsedTime += entry.process.data.duration
                                     return (
                                         <div
+                                            key={entry.id}
                                             className="item process"
                                             data-end-time={elapsedTime + 's'}
                                             style={{

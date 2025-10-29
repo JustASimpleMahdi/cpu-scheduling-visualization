@@ -4,6 +4,7 @@ import type {GuantEntry} from '../types/GuantEntry'
 import type {Queue} from '../types/Queue'
 import {getRandomColorByName} from '../utils/Color'
 import type Process from "../types/Process.ts";
+import {generateId} from "../utils/Id.ts";
 
 export default function FCFS(data: DataEntry[]): AlgorithmState[] {
     const dataSortedByEnterTime = [...data].sort((a, b) => (a.enterTime ?? 0) - (b.enterTime ?? 0))
@@ -32,6 +33,7 @@ export default function FCFS(data: DataEntry[]): AlgorithmState[] {
     function addGapToGuant(duration: number) {
         guantData.push({
             type: 'EnterTimeGap',
+            id: generateId(),
             duration,
         })
     }
@@ -39,6 +41,7 @@ export default function FCFS(data: DataEntry[]): AlgorithmState[] {
     function addEntryToGuant(entry: DataEntry) {
         guantData.push({
             type: 'Process',
+            id: generateId(),
             data: entry,
             color: getRandomColorByName(entry.name),
         })
@@ -46,6 +49,8 @@ export default function FCFS(data: DataEntry[]): AlgorithmState[] {
 
     function addProcessToQueue(process: Process) {
         queue.push({
+            type: 'Queue',
+            id: generateId(),
             process,
             color: getRandomColorByName(process.data.name),
         })
