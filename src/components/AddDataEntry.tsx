@@ -1,28 +1,36 @@
-import { useState } from 'react'
-import type { NewDataEntry } from '../types/DataEntry'
+import {useState} from 'react'
+import type {NewDataEntry} from '../types/DataEntry'
+
 export interface IAddDataEntry {
     onAddEntry: (entry: NewDataEntry) => void
 }
-export default function AddDataEntry({ onAddEntry }: IAddDataEntry) {
+
+export default function AddDataEntry({onAddEntry}: IAddDataEntry) {
     const [name, setName] = useState<string>('')
     const [duration, setDuration] = useState<number>(0)
     const [enterTime, setEnterTime] = useState<number>(0)
+
     function onSubmit(event: any): void {
         event.preventDefault()
         if (!(name && duration)) return
-        onAddEntry({
+        const newData = {
             name,
             duration,
             enterTime,
-        } as NewDataEntry)
+        }
+        if (newData.duration < 0) newData.duration = 0
+        if (newData.enterTime < 0) newData.enterTime = 0
+        onAddEntry(newData as NewDataEntry)
 
         resetForm()
     }
+
     function resetForm() {
         setName('')
         setDuration(0)
         setEnterTime(0)
     }
+
     return (
         <form onSubmit={onSubmit} className="data-input">
             <input

@@ -1,13 +1,12 @@
-export default interface DataEntry {
+export interface DataEntry {
     id: number
     name: string
     duration: number
-    enterTime: number | undefined
-    color: string
+    enterTime: number
 }
 
 export interface NewDataEntry {
     name: string
     duration: number
-    enterTime: number | undefined
+    enterTime: number
 }
