@@ -1,13 +1,13 @@
 import {type ChangeEvent, useEffect, useMemo, useState} from 'react'
 import type {DataEntry, NewDataEntry} from './types/DataEntry'
 import AddDataEntry from './components/AddDataEntry'
-import FCFS from './algorithms/FCFS'
-import NP_LCFS from "./algorithms/NP_LCFS.ts";
 import type {AlgorithmState} from './types/Base'
 import dataSample from './samples/data'
 import {generateId} from "./utils/Id.ts";
 import {Algorithm} from "./types/Algorithm.ts";
-import P_LCFS from "./algorithms/P_LCFS.ts";
+import FCFS from "./class/Algorithms/FCFS.ts";
+import NP_LCFS from "./class/Algorithms/NP_LCFS.ts";
+import P_LCFS from "./class/Algorithms/P_LCFS.ts";
 
 function App() {
     const [data, setData] = useState<null | DataEntry[]>(dataSample())
@@ -15,14 +15,14 @@ function App() {
 
     const allStates = useMemo<null | AlgorithmState[]>(() => {
         if (!data) return null
-        switch (algorithm) {
-            case Algorithm.FCFS:
-                return FCFS(data)
-            case Algorithm.NP_LCFS:
-                return NP_LCFS(data)
-            case Algorithm.P_LCFS:
-                return P_LCFS(data)
-        }
+
+        const algorithmClass = {
+            [Algorithm.FCFS]: FCFS,
+            [Algorithm.NP_LCFS]: NP_LCFS,
+            [Algorithm.P_LCFS]: P_LCFS,
+        }[algorithm]
+        
+        return (new algorithmClass(data)).run()
     }, [data, algorithm])
 
     const [currentStateIndex, setCurrentStateIndex] = useState<number | null>(null)
@@ -67,6 +67,7 @@ function App() {
 
     function nextState() {
         if (!allStates?.length) return
+        /*BUGFIX: when the data is removed the length isn't right*/
 
         setCurrentStateIndex((index) => {
             if (index === null) return 0
