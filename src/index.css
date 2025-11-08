@@ -124,11 +124,6 @@ body {
     translate: -50% 0;
 }
 
-.guant-chart::after {
-    content: var(--guant-total-time-string);
-    right: 0;
-    translate: 50% 0;
-}
 
 .guant-chart .item::after {
     content: attr(data-end-time);
@@ -153,7 +148,7 @@ body {
     content: attr(data-current-time);
     position: absolute;
     top: 100%;
-    translate: -50% 0;
+    translate: -50% .5rem;
     font-size: 1rem;
     font-weight: bold;
     color: #fff6;

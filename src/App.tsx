@@ -7,10 +7,11 @@ import type {AlgorithmState} from './types/Base'
 import dataSample from './samples/data'
 import {generateId} from "./utils/Id.ts";
 import {Algorithm} from "./types/Algorithm.ts";
+import P_LCFS from "./algorithms/P_LCFS.ts";
 
 function App() {
     const [data, setData] = useState<null | DataEntry[]>(dataSample())
-    const [algorithm, setAlgorithm] = useState<Algorithm>(Algorithm.FCFS)
+    const [algorithm, setAlgorithm] = useState<Algorithm>(Algorithm.P_LCFS)
 
     const allStates = useMemo<null | AlgorithmState[]>(() => {
         if (!data) return null
@@ -19,12 +20,15 @@ function App() {
                 return FCFS(data)
             case Algorithm.NP_LCFS:
                 return NP_LCFS(data)
+            case Algorithm.P_LCFS:
+                return P_LCFS(data)
         }
     }, [data, algorithm])
 
     const [currentStateIndex, setCurrentStateIndex] = useState<number | null>(null)
     const currentState = allStates ? allStates.at(currentStateIndex ?? -1) : null
 
+    console.log({allStates, currentState})
 
     useEffect(() => {
         setCurrentStateIndex(null)
@@ -122,7 +126,7 @@ function App() {
                     </div>
                     <div className="input-table-container">
                         <h3>Algorithm</h3>
-                        <select className="algorithm-select" onChange={changeAlgorithm}>
+                        <select className="algorithm-select" onChange={changeAlgorithm} value={algorithm}>
                             {Object.values(Algorithm).map((entry) => (<option value={entry} key={entry}>{entry}</option>))}
                         </select>
                     </div>
@@ -134,8 +138,8 @@ function App() {
                             (() => {
                                 let elapsedTime = 0
                                 return currentState.guant.map((entry) => {
+                                    elapsedTime += entry.duration
                                     if (entry.type === 'EnterTimeGap') {
-                                        elapsedTime += entry.duration
                                         return (
                                             <div
                                                 key={entry.id}
@@ -147,15 +151,15 @@ function App() {
                                             ></div>
                                         )
                                     }
-                                    elapsedTime += entry.data.duration
+
                                     return (
                                         <div
                                             key={entry.id}
                                             className="item process"
                                             data-end-time={elapsedTime + 's'}
                                             style={{
-                                                '--width': entry.data.duration,
-                                                backgroundColor: entry.color,
+                                                '--width': entry.duration,
+                                                backgroundColor: entry.options?.color,
                                             }}
                                         >
                                             <span className="name">{entry.data.name}</span>
@@ -171,23 +175,24 @@ function App() {
                             }}
                         ></div>
                     </div>
+                    {/*TODO: Change queue chart*/}
                     <div className="guant-chart">
                         {currentState &&
                             (() => {
                                 let elapsedTime = 0
                                 return currentState.queue.map((entry) => {
-                                    elapsedTime += entry.process.data.duration
+                                    elapsedTime += entry.duration
                                     return (
                                         <div
                                             key={entry.id}
                                             className="item process"
                                             data-end-time={elapsedTime + 's'}
                                             style={{
-                                                '--width': entry.process.data.duration,
-                                                backgroundColor: entry.color,
+                                                '--width': entry.duration,
+                                                backgroundColor: entry.options?.color,
                                             }}
                                         >
-                                            <span className="name">{entry.process.data.name}</span>
+                                            <span className="name">{entry.data.name}</span>
                                         </div>
                                     )
                                 })

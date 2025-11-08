@@ -1,8 +1,10 @@
-import type Process from "./Process.ts";
+import type {DataEntry} from "./DataEntry.ts";
 
 export interface Queue {
-    type: 'Queue'
     id: string
-    process: Process
-    color: string
+    duration: number
+    data: DataEntry
+    options?: {
+        color: string
+    }
 }

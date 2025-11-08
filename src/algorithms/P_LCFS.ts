@@ -122,7 +122,6 @@ export default function P_LCFS(data: DataEntry[]): AlgorithmState[] {
         // process is done.
         currentTime += currentProcess.time.remaining
         currentProcess.time.remaining = 0
-        currentProcess.time.total.end = currentTime
         currentProcess.time.end = currentTime
         currentProcess = null
         addCurrentState()
