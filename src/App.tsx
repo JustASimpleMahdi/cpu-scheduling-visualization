@@ -1,18 +1,26 @@
-import {useEffect, useMemo, useState} from 'react'
+import {type ChangeEvent, useEffect, useMemo, useState} from 'react'
 import type {DataEntry, NewDataEntry} from './types/DataEntry'
 import AddDataEntry from './components/AddDataEntry'
 import FCFS from './algorithms/FCFS'
+import NP_LCFS from "./algorithms/NP_LCFS.ts";
 import type {AlgorithmState} from './types/Base'
 import dataSample from './samples/data'
 import {generateId} from "./utils/Id.ts";
+import {Algorithm} from "./types/Algorithm.ts";
 
 function App() {
     const [data, setData] = useState<null | DataEntry[]>(dataSample())
+    const [algorithm, setAlgorithm] = useState<Algorithm>(Algorithm.FCFS)
 
     const allStates = useMemo<null | AlgorithmState[]>(() => {
         if (!data) return null
-        return FCFS(data)
-    }, [data])
+        switch (algorithm) {
+            case Algorithm.FCFS:
+                return FCFS(data)
+            case Algorithm.NP_LCFS:
+                return NP_LCFS(data)
+        }
+    }, [data, algorithm])
 
     const [currentStateIndex, setCurrentStateIndex] = useState<number | null>(null)
     const currentState = allStates ? allStates.at(currentStateIndex ?? -1) : null
@@ -20,7 +28,7 @@ function App() {
 
     useEffect(() => {
         setCurrentStateIndex(null)
-    }, [data]);
+    }, [data, algorithm]);
 
     // TODO: fix guant totalTime
 
@@ -70,6 +78,12 @@ function App() {
         })
     }
 
+    function changeAlgorithm(e: ChangeEvent<HTMLSelectElement>) {
+        const value = e.target.value as string;
+        setAlgorithm(Algorithm[value])
+        e.target.blur()
+    }
+
     return (
         <>
             <div className="main-container">
@@ -108,8 +122,8 @@ function App() {
                     </div>
                     <div className="input-table-container">
                         <h3>Algorithm</h3>
-                        <select className="algorithm-select">
-                            <option value="FCFS">FCFS</option>
+                        <select className="algorithm-select" onChange={changeAlgorithm}>
+                            {Object.values(Algorithm).map((entry) => (<option value={entry} key={entry}>{entry}</option>))}
                         </select>
                     </div>
                 </div>
