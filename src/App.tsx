@@ -1,4 +1,4 @@
-import {type ChangeEvent, useEffect, useMemo, useState} from 'react'
+import {type ChangeEvent, useEffect, useMemo, useRef, useState} from 'react'
 import type {DataEntry, NewDataEntry} from './types/DataEntry'
 import AddDataEntry from './components/AddDataEntry'
 import type {AlgorithmState} from './types/Base'
@@ -8,10 +8,12 @@ import {Algorithm} from "./types/Algorithm.ts";
 import FCFS from "./class/Algorithms/FCFS.ts";
 import NP_LCFS from "./class/Algorithms/NP_LCFS.ts";
 import P_LCFS from "./class/Algorithms/P_LCFS.ts";
+import RR from "./class/Algorithms/RR.ts";
 
 function App() {
     const [data, setData] = useState<null | DataEntry[]>(dataSample())
-    const [algorithm, setAlgorithm] = useState<Algorithm>(Algorithm.P_LCFS)
+    const [algorithm, setAlgorithm] = useState<Algorithm>(Algorithm.RR)
+    const [quantum, setQuantum] = useState<number | undefined>(0.5);
 
     const allStates = useMemo<null | AlgorithmState[]>(() => {
         if (!data) return null
@@ -20,21 +22,29 @@ function App() {
             [Algorithm.FCFS]: FCFS,
             [Algorithm.NP_LCFS]: NP_LCFS,
             [Algorithm.P_LCFS]: P_LCFS,
+            [Algorithm.RR]: RR,
         }[algorithm]
-        
+
+        if (algorithm === Algorithm.RR) {
+            return (new algorithmClass(data, quantum)).run()
+        }
         return (new algorithmClass(data)).run()
-    }, [data, algorithm])
+    }, [data, algorithm, quantum])
 
     const [currentStateIndex, setCurrentStateIndex] = useState<number | null>(null)
     const currentState = allStates ? allStates.at(currentStateIndex ?? -1) : null
 
-    console.log({allStates, currentState})
+    const allStatesRef = useRef<AlgorithmState[] | null>(null);
+    // Keep ref in sync with state
+    useEffect(() => {
+        allStatesRef.current = allStates;
+    }, [allStates]);
 
     useEffect(() => {
         setCurrentStateIndex(null)
-    }, [data, algorithm]);
+    }, [data, algorithm, quantum]);
 
-    // TODO: fix guant totalTime
+    const guantTotalTime = Math.max(currentState?.guant.reduce((p, c) => p + c.duration, 0), 10)
 
     function addData(entry: NewDataEntry) {
         setData((currentData) => [
@@ -66,12 +76,13 @@ function App() {
     }, [])
 
     function nextState() {
-        if (!allStates?.length) return
-        /*BUGFIX: when the data is removed the length isn't right*/
+        const currentAllStates = allStatesRef.current;
+
+        if (!currentAllStates?.length) return
 
         setCurrentStateIndex((index) => {
             if (index === null) return 0
-            return Math.min(allStates.length - 1, index! + 1)
+            return Math.min(currentAllStates.length - 1, index! + 1)
         })
     }
 
@@ -125,16 +136,29 @@ function App() {
                         </table>
                         <AddDataEntry onAddEntry={addData}/>
                     </div>
-                    <div className="input-table-container">
+                    <div className="algorithm-input-container">
                         <h3>Algorithm</h3>
                         <select className="algorithm-select" onChange={changeAlgorithm} value={algorithm}>
                             {Object.values(Algorithm).map((entry) => (<option value={entry} key={entry}>{entry}</option>))}
                         </select>
+                        {algorithm === Algorithm.RR &&
+                            <div>
+                                <input
+                                    onChange={(e) => {
+                                        if (e.target.valueAsNumber === 0) setQuantum(1)
+                                        else setQuantum(e.target.valueAsNumber)
+                                    }}
+                                    value={quantum}
+                                    type="number"
+                                />
+                            </div>}
                     </div>
                 </div>
 
                 <div className="output-container">
-                    <div className="guant-chart">
+                    <div className="guant-chart" style={{
+                        '--guant-total-time': guantTotalTime
+                    }}>
                         {currentState &&
                             (() => {
                                 let elapsedTime = 0

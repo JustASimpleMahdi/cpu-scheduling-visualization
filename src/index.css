@@ -171,7 +171,7 @@ body {
     margin-top: 1rem;
 }
 
-.data-input input {
+input {
     background-color: #fff1;
     color: inherit;
     font: inherit;
@@ -182,7 +182,7 @@ body {
     width: auto;
 }
 
-.data-input input:focus {
+input:focus {
     border-color: #fff;
 }
 
@@ -195,4 +195,8 @@ body {
     font-size: 1.5rem;
     width: 3rem;
     height: 3rem;
+}
+
+.algorithm-input-container select {
+    margin-bottom: 1rem;
 }
