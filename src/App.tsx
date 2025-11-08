@@ -9,6 +9,7 @@ import FCFS from "./class/Algorithms/FCFS.ts";
 import NP_LCFS from "./class/Algorithms/NP_LCFS.ts";
 import P_LCFS from "./class/Algorithms/P_LCFS.ts";
 import RR from "./class/Algorithms/RR.ts";
+import DataTable from "./components/DataTable.tsx";
 
 function App() {
     const [data, setData] = useState<null | DataEntry[]>(dataSample())
@@ -100,40 +101,41 @@ function App() {
         e.target.blur()
     }
 
+    function updateDataEntry(id: string, field: keyof DataEntry, value: string | number) {
+        setData((currentData) => {
+            if (!currentData) return null;
+
+            const numValue = typeof value === 'string' ? parseFloat(value) : value;
+            let finalValue: string | number = value;
+
+            if (field === 'duration' || field === 'enterTime') {
+                // Ensure non-negative; duration must be > 0
+                if (field === 'duration') {
+                    finalValue = Math.max(0.1, isNaN(numValue) ? 0.1 : numValue);
+                } else {
+                    // enterTime
+                    finalValue = Math.max(0, isNaN(numValue) ? 0 : numValue);
+                }
+            }
+
+            return currentData.map((entry) =>
+                entry.id === id ? {...entry, [field]: finalValue} : entry
+            );
+        });
+    }
+
     return (
         <>
             <div className="main-container">
                 <div className="input-container">
                     <div className="input-table-container">
                         <h3>Data</h3>
-                        <table className="data-table">
-                            <thead>
-                            <tr>
-                                <th>Name</th>
-                                <th>Duration</th>
-                                <th>Enter Time</th>
-                                <th></th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            {data &&
-                                data.map((entry, index) => (
-                                    <tr key={index}>
-                                        <td>{entry.name}</td>
-                                        <td>{entry.duration}</td>
-                                        <td>{entry.enterTime}</td>
-                                        <td>
-                                            <button
-                                                type="button"
-                                                onClick={() => removeDataEntry(entry.id)}
-                                            >
-                                                D
-                                            </button>
-                                        </td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
+                        <DataTable
+                            data={data}
+                            onUpdateEntry={updateDataEntry}
+                            onRemoveEntry={removeDataEntry}
+                        />
+
                         <AddDataEntry onAddEntry={addData}/>
                     </div>
                     <div className="algorithm-input-container">
