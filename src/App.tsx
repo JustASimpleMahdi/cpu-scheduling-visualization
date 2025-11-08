@@ -18,7 +18,10 @@ function App() {
     const currentState = allStates ? allStates.at(currentStateIndex ?? -1) : null
 
 
-    // TODO: change currentStateIndex when data is changed
+    useEffect(() => {
+        setCurrentStateIndex(null)
+    }, [data]);
+
     // TODO: fix guant totalTime
 
     function addData(entry: NewDataEntry) {

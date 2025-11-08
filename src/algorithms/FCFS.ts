@@ -43,7 +43,7 @@ export default function FCFS(data: DataEntry[]): AlgorithmState[] {
             type: 'Process',
             id: generateId(),
             data: entry,
-            color: getRandomColorByName(entry.name),
+            color: getRandomColorByName(entry.id),
         })
     }
 
@@ -52,7 +52,7 @@ export default function FCFS(data: DataEntry[]): AlgorithmState[] {
             type: 'Queue',
             id: generateId(),
             process,
-            color: getRandomColorByName(process.data.name),
+            color: getRandomColorByName(process.data.id),
         })
     }
 
