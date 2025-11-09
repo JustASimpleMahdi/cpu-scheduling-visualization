@@ -15,8 +15,15 @@ export interface EnterTimeGap {
     options?: GauntItemOptions
 }
 
+export interface SwitchContext {
+    type: 'SwitchContext'
+    id: string
+    duration: number
+    options?: GauntItemOptions
+}
+
 export interface GauntItemOptions {
     color?: string
 }
 
-export type GuantEntry = (Process | EnterTimeGap)
+export type GuantEntry = (Process | EnterTimeGap | SwitchContext)

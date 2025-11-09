@@ -12,11 +12,15 @@ import DataTable from "./components/DataTable.tsx";
 import SJF from "./class/Algorithms/SJF.ts";
 import SRT from "./class/Algorithms/SRT.ts";
 import notesDataSample from "./samples/notes.ts";
+import type {AlgorithmOptions} from "./class/Algorithm.ts";
 
 function App() {
     const [data, setData] = useState<null | DataEntry[]>(notesDataSample())
     const [algorithm, setAlgorithm] = useState<AlgorithmEnum>(AlgorithmEnum.SJF)
-    const [quantum, setQuantum] = useState<number | undefined>(0.5);
+    const [quantum, setQuantum] = useState<number | undefined>(2);
+    const [applySwitchContext, setApplySwitchContext] = useState<boolean>(true);
+    const [switchContext, setSwitchContext] = useState<number>(1);
+
 
     const allStates = useMemo<null | AlgorithmState[]>(() => {
         if (!data) return null
@@ -30,11 +34,14 @@ function App() {
             [AlgorithmEnum.SRT]: SRT,
         }[algorithm]
 
-        if (algorithm === AlgorithmEnum.RR) {
-            return (new algorithmClass(data, quantum)).run()
+        const options: AlgorithmOptions = {
+            switchContext: applySwitchContext ? switchContext : undefined
         }
-        return (new algorithmClass(data)).run()
-    }, [data, algorithm, quantum])
+        if (algorithm === AlgorithmEnum.RR) {
+            return (new algorithmClass(data, quantum, options)).run()
+        }
+        return (new algorithmClass(data, options)).run()
+    }, [data, algorithm, quantum, switchContext, applySwitchContext])
 
     const [currentStateIndex, setCurrentStateIndex] = useState<number | null>(null)
     const currentState = allStates ? allStates.at(currentStateIndex ?? -1) : null
@@ -158,6 +165,13 @@ function App() {
                                     type="number"
                                 />
                             </div>}
+                        <div className="switch-context-input" aria-disabled={!applySwitchContext}>
+                            <input type="checkbox" checked={applySwitchContext} onChange={(e) => {
+                                setApplySwitchContext(e.target.checked)
+                            }}/>
+                            <span>Switch Context: </span>
+                            <input type="number" min={0} value={switchContext} onChange={(e) => setSwitchContext(e.target.valueAsNumber)}/>
+                        </div>
                     </div>
                 </div>
 
@@ -170,32 +184,47 @@ function App() {
                                 let elapsedTime = 0
                                 return currentState.guant.map((entry) => {
                                     elapsedTime += entry.duration
-                                    if (entry.type === 'EnterTimeGap') {
-                                        return (
-                                            <div
-                                                key={entry.id}
-                                                className="item gap"
-                                                data-end-time={elapsedTime + 's'}
-                                                style={{
-                                                    '--width': entry.duration,
-                                                }}
-                                            ></div>
-                                        )
-                                    }
 
-                                    return (
-                                        <div
-                                            key={entry.id}
-                                            className="item process"
-                                            data-end-time={elapsedTime + 's'}
-                                            style={{
-                                                '--width': entry.duration,
-                                                backgroundColor: entry.options?.color,
-                                            }}
-                                        >
-                                            <span className="name">{entry.data.name}</span>
-                                        </div>
-                                    )
+                                    switch (entry.type) {
+                                        case "EnterTimeGap":
+                                            return (
+                                                <div
+                                                    key={entry.id}
+                                                    className="item gap"
+                                                    data-end-time={elapsedTime + 's'}
+                                                    style={{
+                                                        '--width': entry.duration,
+                                                    }}
+                                                ></div>
+                                            )
+                                        case "Process":
+
+                                            return (
+                                                <div
+                                                    key={entry.id}
+                                                    className="item process"
+                                                    data-end-time={elapsedTime + 's'}
+                                                    style={{
+                                                        '--width': entry.duration,
+                                                        backgroundColor: entry.options?.color,
+                                                    }}
+                                                >
+                                                    <span className="name">{entry.data.name}</span>
+                                                </div>
+                                            )
+                                        case "SwitchContext":
+                                            return (
+                                                <div
+                                                    key={entry.id}
+                                                    className="item switch-context"
+                                                    data-end-time={elapsedTime + 's'}
+                                                    style={{
+                                                        '--width': entry.duration,
+                                                    }}
+                                                >
+                                                </div>
+                                            )
+                                    }
                                 })
                             })()}
                         <div
@@ -206,7 +235,6 @@ function App() {
                             }}
                         ></div>
                     </div>
-                    {/*TODO: Change queue chart*/}
                     <div className="guant-chart">
                         {currentState &&
                             (() => {

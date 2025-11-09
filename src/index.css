@@ -83,6 +83,7 @@ body {
     width: calc(var(--width) / var(--guant-total-time) * 100%);
     position: relative;
     flex-shrink: 1;
+    animation: add 300ms;
 }
 
 .guant-chart .process {
@@ -92,7 +93,6 @@ body {
     align-items: center;
     flex-direction: column;
     font-weight: bold;
-    animation: add 300ms;
 }
 
 @keyframes add {
@@ -141,7 +141,6 @@ body {
     background-color: #fff6;
     translate: 0 -50%;
     transition: left 150ms ease-in-out;
-    /* TODO: current time overlaps with items time */
 }
 
 .guant-chart .current-time::after {
@@ -152,6 +151,13 @@ body {
     font-size: 1rem;
     font-weight: bold;
     color: #fff6;
+}
+
+.guant-chart .switch-context {
+    --stroke: 1px;
+    --gap: 10px;
+    background-image: repeating-linear-gradient(-45deg, #fff7 0px, #fff7 var(--stroke), transparent var(--stroke), transparent var(--gap));
+    background-color: #fff3;
 }
 
 .algorithm-select {
@@ -197,6 +203,11 @@ input:focus {
     height: 3rem;
 }
 
+.algorithm-input-container {
+    display: flex;
+    flex-direction: column;
+}
+
 .algorithm-input-container select {
     margin-bottom: 1rem;
 }
@@ -207,4 +218,18 @@ input:focus {
     padding: 4px;
     font-size: 14px;
     box-sizing: border-box;
+}
+
+.switch-context-input {
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: opacity 150ms linear;
+    margin-top: auto;
+    margin-bottom: 0.5rem;
+}
+
+.switch-context-input[aria-disabled="true"] {
+    opacity: 0.7;
 }

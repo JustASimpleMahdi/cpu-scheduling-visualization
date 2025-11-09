@@ -34,7 +34,7 @@ export default class SRT extends Algorithm {
                 this.pushQueue(this.currentProcess)
                 this.guantData.at(-1)!.duration = runTime
                 if (!this.guantData.at(-1)!.duration) {
-                    this.guantData.pop()
+                    this.popGuantEntry()
                 }
                 this.pushQueue(process)
                 this.currentProcess = null

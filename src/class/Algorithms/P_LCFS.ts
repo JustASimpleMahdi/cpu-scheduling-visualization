@@ -33,7 +33,7 @@ export default class P_LCFS extends Algorithm {
                 this.pushQueue(this.currentProcess)
                 this.guantData.at(-1)!.duration = runTime
                 if (!this.guantData.at(-1)!.duration) {
-                    this.guantData.pop()
+                    this.popGuantEntry()
                 }
 
                 this.currentProcess = process

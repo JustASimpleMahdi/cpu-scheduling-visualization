@@ -1,11 +1,11 @@
-import Algorithm from "../Algorithm.ts";
+import Algorithm, {type AlgorithmOptions} from "../Algorithm.ts";
 import type {DataEntry} from "../../types/DataEntry.ts";
 
 export default class RR extends Algorithm {
     protected availableProcessTime: number;
 
-    constructor(data: DataEntry[], public quantum: number) {
-        super(data);
+    constructor(data: DataEntry[], public quantum: number, options: AlgorithmOptions | undefined) {
+        super(data, options);
     }
 
     public run() {

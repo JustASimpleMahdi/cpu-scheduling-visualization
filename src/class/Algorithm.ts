@@ -19,7 +19,7 @@ export default abstract class Algorithm {
     protected queue: Process[] = []
     protected states: AlgorithmState[] = []
 
-    constructor(public data: DataEntry[]) {
+    constructor(public data: DataEntry[], public options: AlgorithmOptions | undefined) {
         this.processes = this.sortedDataByEnterTime.map((entry) => ({
             data: entry,
             time: {
@@ -57,6 +57,14 @@ export default abstract class Algorithm {
     }
 
     protected addEntryToGuant({data, duration}: { duration: number, data: DataEntry }) {
+        if (this.options?.switchContext && this.guantData.filter(entry => entry.type === "Process").length !== 0) {
+            this.guantData.push({
+                type: 'SwitchContext',
+                id: generateId(),
+                duration: this.options.switchContext
+            })
+            this.currentTime += this.options.switchContext
+        }
         this.guantData.push({
             type: 'Process',
             id: generateId(),
@@ -79,6 +87,14 @@ export default abstract class Algorithm {
         })
     }
 
+    protected popGuantEntry() {
+        this.guantData.pop()
+        if (this.guantData.at(-1)?.type === 'SwitchContext') {
+            const {duration} = this.guantData.pop()
+            this.currentTime -= duration
+        }
+    }
+
     protected pushQueue(process: Process) {
         this.addEntryToQueue({duration: process.time.remaining, data: process.data})
         this.queue.push(process)
@@ -96,4 +112,8 @@ export default abstract class Algorithm {
         this.queueData.shift()
         return this.queue.shift()!
     }
+}
+
+export interface AlgorithmOptions {
+    switchContext: number | undefined
 }
