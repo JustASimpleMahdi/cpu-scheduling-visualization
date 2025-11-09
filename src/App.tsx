@@ -143,7 +143,7 @@ function App() {
                     <div className="algorithm-input-container">
                         <h3>Algorithm</h3>
                         <select className="algorithm-select" onChange={changeAlgorithm} value={algorithm}>
-                            {Object.values(AlgorithmEnum).map((entry) => (<option value={entry} key={entry}>{entry}</option>))}
+                            {Object.entries(AlgorithmEnum).map(([key, value]) => (<option value={key} key={key}>{value}</option>))}
                         </select>
                         {algorithm === AlgorithmEnum.RR &&
                             <div>
