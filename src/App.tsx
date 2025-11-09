@@ -4,29 +4,31 @@ import AddDataEntry from './components/AddDataEntry'
 import type {AlgorithmState} from './types/Base'
 import dataSample from './samples/data'
 import {generateId} from "./utils/Id.ts";
-import {Algorithm} from "./types/Algorithm.ts";
+import {AlgorithmEnum} from "./types/AlgorithmEnum.ts";
 import FCFS from "./class/Algorithms/FCFS.ts";
 import NP_LCFS from "./class/Algorithms/NP_LCFS.ts";
 import P_LCFS from "./class/Algorithms/P_LCFS.ts";
 import RR from "./class/Algorithms/RR.ts";
 import DataTable from "./components/DataTable.tsx";
+import SJF from "./class/Algorithms/SJF.ts";
 
 function App() {
     const [data, setData] = useState<null | DataEntry[]>(dataSample())
-    const [algorithm, setAlgorithm] = useState<Algorithm>(Algorithm.RR)
+    const [algorithm, setAlgorithm] = useState<AlgorithmEnum>(AlgorithmEnum.SJF)
     const [quantum, setQuantum] = useState<number | undefined>(0.5);
 
     const allStates = useMemo<null | AlgorithmState[]>(() => {
         if (!data) return null
 
         const algorithmClass = {
-            [Algorithm.FCFS]: FCFS,
-            [Algorithm.NP_LCFS]: NP_LCFS,
-            [Algorithm.P_LCFS]: P_LCFS,
-            [Algorithm.RR]: RR,
+            [AlgorithmEnum.FCFS]: FCFS,
+            [AlgorithmEnum.NP_LCFS]: NP_LCFS,
+            [AlgorithmEnum.P_LCFS]: P_LCFS,
+            [AlgorithmEnum.RR]: RR,
+            [AlgorithmEnum.SJF]: SJF,
         }[algorithm]
 
-        if (algorithm === Algorithm.RR) {
+        if (algorithm === AlgorithmEnum.RR) {
             return (new algorithmClass(data, quantum)).run()
         }
         return (new algorithmClass(data)).run()
@@ -97,7 +99,7 @@ function App() {
 
     function changeAlgorithm(e: ChangeEvent<HTMLSelectElement>) {
         const value = e.target.value as string;
-        setAlgorithm(Algorithm[value])
+        setAlgorithm(AlgorithmEnum[value])
         e.target.blur()
     }
 
@@ -141,9 +143,9 @@ function App() {
                     <div className="algorithm-input-container">
                         <h3>Algorithm</h3>
                         <select className="algorithm-select" onChange={changeAlgorithm} value={algorithm}>
-                            {Object.values(Algorithm).map((entry) => (<option value={entry} key={entry}>{entry}</option>))}
+                            {Object.values(AlgorithmEnum).map((entry) => (<option value={entry} key={entry}>{entry}</option>))}
                         </select>
-                        {algorithm === Algorithm.RR &&
+                        {algorithm === AlgorithmEnum.RR &&
                             <div>
                                 <input
                                     onChange={(e) => {

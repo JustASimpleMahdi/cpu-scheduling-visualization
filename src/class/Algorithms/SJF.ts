@@ -1,12 +1,13 @@
 import Algorithm from "../Algorithm.ts";
+import type Process from "../../types/Process.ts";
 
-export default class NP_LCFS extends Algorithm {
+export default class SJF extends Algorithm {
     public run() {
         this.addCurrentState()
 
         while (this.processes.length || this.queue.length || this.currentProcess) {
             if (!this.currentProcess) {
-                this.currentProcess = this.queue.length ? this.popQueue()! : this.processes.shift()!;
+                this.currentProcess = this.queue.length ? this.popSmallestRemainingProcess()! : this.processes.shift()!;
             }
 
             // add gap before process
@@ -44,5 +45,24 @@ export default class NP_LCFS extends Algorithm {
         }
 
         return this.states
+    }
+
+    protected popSmallestRemainingProcess(): Process | null {
+        if (!this.queue.length) return null;
+
+        let smallestIndex = null;
+        for (const index in this.queue) {
+            if (smallestIndex === null) {
+                smallestIndex = index
+                continue
+            }
+            if (this.queue[index].time.remaining < this.queue[smallestIndex].time.remaining) {
+                smallestIndex = index;
+            }
+        }
+        const [process] = this.queue.splice(smallestIndex, 1)
+        this.queueData = this.queueData.filter((entry) => entry.data.id !== process.data.id)
+
+        return process
     }
 }
