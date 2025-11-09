@@ -2,7 +2,6 @@ import {type ChangeEvent, useEffect, useMemo, useRef, useState} from 'react'
 import type {DataEntry, NewDataEntry} from './types/DataEntry'
 import AddDataEntry from './components/AddDataEntry'
 import type {AlgorithmState} from './types/Base'
-import dataSample from './samples/data'
 import {generateId} from "./utils/Id.ts";
 import {AlgorithmEnum} from "./types/AlgorithmEnum.ts";
 import FCFS from "./class/Algorithms/FCFS.ts";
@@ -11,9 +10,11 @@ import P_LCFS from "./class/Algorithms/P_LCFS.ts";
 import RR from "./class/Algorithms/RR.ts";
 import DataTable from "./components/DataTable.tsx";
 import SJF from "./class/Algorithms/SJF.ts";
+import SRT from "./class/Algorithms/SRT.ts";
+import notesDataSample from "./samples/notes.ts";
 
 function App() {
-    const [data, setData] = useState<null | DataEntry[]>(dataSample())
+    const [data, setData] = useState<null | DataEntry[]>(notesDataSample())
     const [algorithm, setAlgorithm] = useState<AlgorithmEnum>(AlgorithmEnum.SJF)
     const [quantum, setQuantum] = useState<number | undefined>(0.5);
 
@@ -26,6 +27,7 @@ function App() {
             [AlgorithmEnum.P_LCFS]: P_LCFS,
             [AlgorithmEnum.RR]: RR,
             [AlgorithmEnum.SJF]: SJF,
+            [AlgorithmEnum.SRT]: SRT,
         }[algorithm]
 
         if (algorithm === AlgorithmEnum.RR) {

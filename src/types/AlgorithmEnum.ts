@@ -4,4 +4,5 @@ export enum AlgorithmEnum {
     P_LCFS = 'P_LCFS',
     RR = 'RR',
     SJF = 'SPN (SJF)',
+    SRT = 'SRT',
 }
